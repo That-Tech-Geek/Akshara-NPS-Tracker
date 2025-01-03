@@ -3,8 +3,10 @@ import pandas as pd
 import altair as alt
 import datetime
 
-# Frontend for adding a ticket
+# Set page configuration (only once)
 st.set_page_config(page_title="Akshara Support", page_icon="🎫")
+
+# Frontend for adding a ticket
 st.title("🎫 Akshara Support")
 
 st.write(
@@ -52,7 +54,6 @@ if submitted:
         st.success(f"Ticket {ticket_id} submitted successfully!")
 
 # Backend for managing tickets
-st.set_page_config(page_title="Support Tickets - Backend", page_icon="🔒")
 st.title("🔒 Backend Dashboard")
 
 # Password protection
@@ -111,7 +112,7 @@ if "df" in st.session_state and not st.session_state.df.empty:
         st.write("##### Ticket Priority Distribution")
         priority_plot = (
             alt.Chart(edited_df)
-            .mark_pie()
+            .mark_arc()
             .encode(theta="count():Q", color="Priority:N")
         )
         st.altair_chart(priority_plot, use_container_width=True)
