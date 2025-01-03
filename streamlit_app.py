@@ -70,8 +70,8 @@ st.title("🔒 Backend Dashboard")
 
 # Password protection
 password = st.text_input("Enter password to access backend:", type="password")
-Password = st.secrets["PASSWORD"]
-if password != Password:  # Replace with your secure password
+PAssword = st.secrets["Password"]
+if password != PAssword:  # Replace with your secure password
     st.warning("Enter the correct password to access this section.")
     st.stop()
 
