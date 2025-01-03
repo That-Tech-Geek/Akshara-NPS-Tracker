@@ -6,6 +6,14 @@ import datetime
 # Set page configuration (only once)
 st.set_page_config(page_title="Akshara Support", page_icon="🎫")
 
+# Clear existing tickets while keeping the structure
+if "df" in st.session_state:
+    st.session_state.df = st.session_state.df.iloc[0:0]  # Clear all rows, keep columns intact
+
+# Initialize dataset if not present in session state
+if "df" not in st.session_state:
+    st.session_state.df = pd.DataFrame(columns=["ID", "Issue", "Status", "Priority", "Date Submitted"])
+
 # Frontend for adding a ticket
 st.title("🎫 Akshara Support")
 
@@ -14,10 +22,6 @@ st.write(
     Submit a support ticket using the form below. Your ticket will be processed by the support team.
     """
 )
-
-# Check if the session state for the dataset exists; initialize if not.
-if "df" not in st.session_state:
-    st.session_state.df = pd.DataFrame(columns=["ID", "Issue", "Status", "Priority", "Date Submitted"])
 
 # Add a new ticket form
 with st.form("add_ticket_form"):
@@ -112,7 +116,7 @@ if "df" in st.session_state and not st.session_state.df.empty:
         st.write("##### Ticket Priority Distribution")
         priority_plot = (
             alt.Chart(edited_df)
-            .mark_arc()
+            .mark_pie()
             .encode(theta="count():Q", color="Priority:N")
         )
         st.altair_chart(priority_plot, use_container_width=True)
