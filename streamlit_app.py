@@ -3,25 +3,30 @@ import pandas as pd
 import altair as alt
 import datetime
 
-# Set page configuration (only once)
-st.set_page_config(page_title="Akshara Support", page_icon="🎫")
+# File to store ticket data
+DATA_FILE = "tickets.csv"
 
-# Clear existing tickets while keeping the structure
-if "df" in st.session_state:
-    st.session_state.df = st.session_state.df.iloc[0:0]  # Clear all rows, keep columns intact
+# Function to load dataset from a file
+def load_data():
+    try:
+        return pd.read_csv(DATA_FILE)
+    except FileNotFoundError:
+        return pd.DataFrame(columns=["ID", "Issue", "Status", "Priority", "Date Submitted"])
 
-# Initialize dataset if not present in session state
+# Function to save dataset to a file
+def save_data(data):
+    data.to_csv(DATA_FILE, index=False)
+
+# Load dataset
 if "df" not in st.session_state:
-    st.session_state.df = pd.DataFrame(columns=["ID", "Issue", "Status", "Priority", "Date Submitted"])
+    st.session_state.df = load_data()
+
+# Set page configuration
+st.set_page_config(page_title="Akshara Support", page_icon="🎫")
 
 # Frontend for adding a ticket
 st.title("🎫 Akshara Support")
-
-st.write(
-    """
-    Submit a support ticket using the form below. Your ticket will be processed by the support team.
-    """
-)
+st.write("Submit a support ticket using the form below. Your ticket will be processed by the support team.")
 
 # Add a new ticket form
 with st.form("add_ticket_form"):
@@ -54,6 +59,9 @@ if submitted:
             [pd.DataFrame([new_ticket]), st.session_state.df], ignore_index=True
         )
 
+        # Save data to file
+        save_data(st.session_state.df)
+
         # Show a success message
         st.success(f"Ticket {ticket_id} submitted successfully!")
 
@@ -69,7 +77,7 @@ if password != "admin123":  # Replace with your secure password
 st.success("Access granted to backend dashboard!")
 
 # Display and edit tickets
-if "df" in st.session_state and not st.session_state.df.empty:
+if not st.session_state.df.empty:
     st.header("Existing Tickets")
     st.write(f"Number of tickets: `{len(st.session_state.df)}`")
     edited_df = st.data_editor(
@@ -91,6 +99,9 @@ if "df" in st.session_state and not st.session_state.df.empty:
         disabled=["ID", "Date Submitted"],
     )
     st.session_state.df = edited_df
+
+    # Save changes to file
+    save_data(st.session_state.df)
 
     # Show statistics
     st.header("Statistics")
